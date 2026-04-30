@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const KEY = "blik-skating-clicker-tg-v1";
+const KEY = "blik-skating-clicker-tg-v2";
 const LOGO_SRC = "/blik-logo.png";
 const BRAND = {
   black: "#000000",
@@ -33,40 +33,75 @@ const icons = {
 
 const stages = [
   ["Дворовый каток", 0, "Новичок", "Первые круги, падения и упрямство."],
-  ["Детская секция", 350, "Перспектива", "Появились первые элементы и тренер."],
-  ["Городские старты", 1400, "Юная надежда", "Первые медали и волнения перед прокатом."],
-  ["Региональная сборная", 4500, "Сильная спортсменка", "Прыжки стабильнее, программа сложнее."],
-  ["Национальная арена", 12000, "Претендентка", "Каждый прокат смотрят судьи и фанаты."],
-  ["Международный сезон", 30000, "Звезда", "Гран-при, пресса и борьба за пьедестал."],
-  ["Вершина льда", 75000, "Легенда", "Ты стал легендой, которую помнят."],
+  ["Детская секция", 500, "Первые шаги", "Появились тренер, расписание и настоящая дисциплина."],
+  ["Школьная лига", 2000, "Юный спортсмен", "Первые контрольные прокаты и борьба с волнением."],
+  ["Городские старты", 7500, "Надежда города", "Первые медали, стабильные элементы и маленькая группа фанатов."],
+  ["Областной сезон", 22000, "Крепкий участник", "Программы стали сложнее, ошибки дороже, конкуренция жестче."],
+  ["Региональная сборная", 60000, "Сильный фигурист", "Появились сборы, медиа и борьба за место в команде."],
+  ["Юниорская арена", 135000, "Претендент", "Каждый старт уже влияет на карьеру и репутацию."],
+  ["Национальная арена", 280000, "Топ страны", "Судьи смотрят на детали, фанаты ждут чистых прокатов."],
+  ["Международный сезон", 520000, "Звезда", "Гран-при, пресса, перелеты и борьба за пьедестал."],
+  ["Главный финал", 850000, "Фаворит", "Один сезон отделяет тебя от статуса легенды."],
+  ["Вершина льда", 1300000, "Легенда", "Ты стал легендой, которую помнят."],
 ].map(([name, min, tone, note]) => ({ name, min, tone, note }));
 
 const upgrades = [
-  ["skates", "Профессиональные коньки", icons.ice, "+1 мастерство за тренировку", 60, 1.45, 30, { click: 1 }],
-  ["coach", "Личный тренер", icons.gym, "+0.8 мастерства в секунду", 140, 1.55, 25, { autoSkill: 0.8 }],
-  ["choreo", "Хореограф", icons.music, "+2 фаната за тренировку", 260, 1.58, 20, { fansClick: 2, score: 1.5 }],
-  ["costume", "Сценический костюм", icons.dress, "+8% к наградам", 420, 1.62, 18, { reward: 0.08 }],
-  ["media", "Медиа-команда", icons.fans, "+1.2 фаната в секунду", 750, 1.67, 16, { autoFans: 1.2 }],
-  ["mental", "Спортивный психолог", icons.spark, "+12 к максимуму энергии", 980, 1.7, 14, { maxEnergy: 12 }],
-  ["quad", "Каскад ультра-си", icons.star, "+5 мастерства за тренировку", 1800, 1.82, 12, { click: 5, score: 5 }],
+  ["skates", "Профессиональные коньки", icons.ice, "+0.8 мастерства за тренировку", 140, 1.55, 45, { click: 0.8 }],
+  ["coach", "Личный тренер", icons.gym, "+0.35 мастерства в секунду", 450, 1.64, 40, { autoSkill: 0.35 }],
+  ["choreo", "Хореограф", icons.music, "+1 фанат за тренировку и бонус к оценке", 760, 1.68, 35, { fansClick: 1, score: 1 }],
+  ["costume", "Сценический костюм", icons.dress, "+4% к наградам", 1200, 1.7, 30, { reward: 0.04 }],
+  ["media", "Медиа-команда", icons.fans, "+0.45 фаната в секунду", 1800, 1.72, 30, { autoFans: 0.45 }],
+  ["mental", "Спортивный психолог", icons.spark, "+8 к максимуму энергии", 2400, 1.74, 25, { maxEnergy: 8 }],
+  ["ballet", "Классическая подготовка", icons.music, "+0.7 мастерства за тренировку и бонус к оценке", 3600, 1.76, 26, { click: 0.7, score: 1.2 }],
+  ["blades", "Заточка лезвий", icons.ice, "+1.2 мастерства за тренировку", 5200, 1.78, 24, { click: 1.2 }],
+  ["recovery", "Восстановление", icons.spark, "+10 к максимуму энергии", 7600, 1.8, 22, { maxEnergy: 10 }],
+  ["analyst", "Видеоаналитик", icons.star, "+3 к оценке и +2% к наградам", 11200, 1.82, 22, { score: 3, reward: 0.02 }],
+  ["agent", "Спортивный агент", icons.money, "+3% к наградам и +0.2 фаната в секунду", 16800, 1.84, 20, { reward: 0.03, autoFans: 0.2 }],
+  ["rink", "Аренда льда", icons.ice, "+0.6 мастерства в секунду", 25000, 1.86, 20, { autoSkill: 0.6 }],
+  ["jumps", "Ультра-си база", icons.star, "+3 мастерства за тренировку и большой бонус к оценке", 38000, 1.9, 18, { click: 3, score: 3 }],
+  ["tour", "Ледовое шоу", icons.fans, "+1 фанат в секунду и +3% к наградам", 56000, 1.92, 18, { autoFans: 1, reward: 0.03 }],
+  ["camp", "Международные сборы", icons.crown, "+1.4 мастерства в секунду и +8 энергии", 86000, 1.95, 16, { autoSkill: 1.4, maxEnergy: 8 }],
 ].map(([id, title, icon, description, base, scale, max, effect]) => ({ id, title, icon, description, base, scale, max, effect }));
 
 const comps = [
-  ["yard", "Первые показательные", 220, 120, 45, 3, 260],
-  ["city", "Кубок города", 900, 420, 180, 8, 1100],
-  ["region", "Региональное первенство", 2800, 1200, 620, 18, 3600],
-  ["nationals", "Чемпионат страны", 8500, 4200, 2400, 46, 11000],
-  ["grandprix", "Финал Гран-при", 22000, 13000, 9000, 110, 28500],
-  ["worlds", "Главный мировой старт", 60000, 44000, 32000, 260, 76000],
+  ["openice", "Открытый лед", 180, 70, 20, 1, 230],
+  ["yard", "Первые показательные", 450, 120, 40, 2, 560],
+  ["school", "Школьная лига", 1000, 230, 80, 4, 1250],
+  ["district", "Кубок района", 2200, 420, 150, 7, 2800],
+  ["city", "Кубок города", 5200, 900, 330, 12, 6600],
+  ["winter", "Зимнее первенство", 12000, 1800, 700, 20, 15000],
+  ["region", "Региональное первенство", 26000, 3800, 1500, 34, 33000],
+  ["federation", "Кубок федерации", 55000, 7600, 3200, 58, 70000],
+  ["juniors", "Юниорский финал", 100000, 13500, 6500, 90, 128000],
+  ["challenge", "Национальный челлендж", 180000, 23000, 12000, 130, 230000],
+  ["nationals", "Чемпионат страны", 300000, 38000, 21000, 190, 385000],
+  ["cupfinal", "Финал Кубка", 470000, 62000, 36000, 270, 600000],
+  ["grandprix", "Финал Гран-при", 700000, 98000, 62000, 390, 900000],
+  ["euro", "Континентальный старт", 950000, 145000, 98000, 560, 1220000],
+  ["worlds", "Главный мировой старт", 1250000, 240000, 160000, 820, 1600000],
 ].map(([id, title, req, coins, fans, rep, diff]) => ({ id, title, req, coins, fans, rep, diff }));
 
 const achievements = [
   ["first100", "Первые 100 часов льда", (s) => s.skill >= 100],
-  ["fans500", "Первые 500 фанатов", (s) => s.fans >= 500],
-  ["coins1000", "Накопить 1 000 ₽", (s) => s.coins >= 1000],
-  ["rep50", "Репутация 50+", (s) => s.rep >= 50],
+  ["skill1000", "Мастерство 1 000", (s) => s.skill >= 1000],
   ["skill10000", "Мастерство 10 000", (s) => s.skill >= 10000],
-  ["legend", "Дойти до вершины льда", (s) => s.skill >= 75000],
+  ["skill100000", "Мастерство 100 000", (s) => s.skill >= 100000],
+  ["skill500000", "Мастерство 500 000", (s) => s.skill >= 500000],
+  ["legend", "Дойти до вершины льда", (s) => s.skill >= 1300000],
+  ["fans500", "Первые 500 фанатов", (s) => s.fans >= 500],
+  ["fans10000", "10 000 фанатов", (s) => s.fans >= 10000],
+  ["fans100000", "100 000 фанатов", (s) => s.fans >= 100000],
+  ["coins1000", "Накопить 1 000 ₽", (s) => s.coins >= 1000],
+  ["coins50000", "Накопить 50 000 ₽", (s) => s.coins >= 50000],
+  ["rep50", "Репутация 50+", (s) => s.rep >= 50],
+  ["rep250", "Репутация 250+", (s) => s.rep >= 250],
+  ["rep1000", "Репутация 1 000+", (s) => s.rep >= 1000],
+  ["start1", "Первый официальный старт", (s) => Object.values(s.done || {}).filter(Boolean).length >= 1],
+  ["start5", "Пять стартов в сезоне", (s) => Object.values(s.done || {}).filter(Boolean).length >= 5],
+  ["start10", "Десять стартов в карьере", (s) => Object.values(s.done || {}).filter(Boolean).length >= 10],
+  ["upgrades5", "Пять улучшений", (s) => Object.values(s.ups || {}).reduce((a, b) => a + b, 0) >= 5],
+  ["upgrades25", "Система подготовки", (s) => Object.values(s.ups || {}).reduce((a, b) => a + b, 0) >= 25],
+  ["energy180", "Запас выносливости", (s) => derived(s).maxEnergy >= 180],
 ].map(([id, title, ok]) => ({ id, title, ok }));
 
 const tabs = [
@@ -74,6 +109,7 @@ const tabs = [
   ["shop", "Апгрейды", icons.zap],
   ["events", "Старты", icons.medal],
   ["career", "Путь", icons.crown],
+  ["achievements", "Достижения", icons.spark],
 ].map(([id, label, icon]) => ({ id, label, icon }));
 
 const n = (v, f = 0) => (Number.isFinite(Number(v)) ? Number(v) : f);
@@ -96,7 +132,7 @@ function buzz(type = "light") {
 function initial() {
   return {
     skill: 0,
-    coins: 80,
+    coins: 60,
     fans: 0,
     rep: 0,
     energy: 100,
@@ -109,7 +145,7 @@ function initial() {
 }
 
 function derived(s) {
-  const d = { click: 4, autoSkill: 0, fansClick: 1, autoFans: 0, score: 0, reward: 0, maxEnergy: 100 };
+  const d = { click: 2, autoSkill: 0, fansClick: 1, autoFans: 0, score: 0, reward: 0, maxEnergy: 100 };
   upgrades.forEach((u) => {
     const lvl = s.ups?.[u.id] || 0;
     Object.entries(u.effect).forEach(([k, v]) => {
@@ -126,7 +162,7 @@ function normalize(raw) {
   const s = {
     ...base,
     skill: Math.max(0, n(raw.skill)),
-    coins: Math.max(0, n(raw.coins, 80)),
+    coins: Math.max(0, n(raw.coins, 60)),
     fans: Math.max(0, n(raw.fans)),
     rep: Math.max(0, n(raw.rep)),
     energy: Math.max(0, n(raw.energy, 100)),
@@ -178,14 +214,14 @@ function tick(s, now = Date.now()) {
   const d = derived(s);
   const sec = Math.max(0, (now - n(s.updated, now)) / 1000);
   if (!sec) return { s: { ...s, updated: now }, got: [] };
-  return applyAch({ ...s, skill: s.skill + d.autoSkill * sec, fans: s.fans + d.autoFans * sec, energy: clamp(s.energy + 5 * sec, 0, d.maxEnergy), updated: now });
+  return applyAch({ ...s, skill: s.skill + d.autoSkill * sec, fans: s.fans + d.autoFans * sec, energy: clamp(s.energy + 1.4 * sec, 0, d.maxEnergy), updated: now });
 }
 
 const TESTS_OK = (() => {
   const s = normalize({ skill: "500", coins: "1000", energy: "9999", ups: { skates: 2, coach: 1 } });
   const a = tick({ ...initial(), updated: 0, ups: { ...initial().ups, coach: 1 } }, 5000).s;
   const b = applyAch({ ...initial(), skill: 100, coins: 80 });
-  return s.skill === 500 && s.coins === 1000 && s.energy <= derived(s).maxEnergy && a.skill === 4 && b.s.coins === 330 && tabs.length === 4;
+  return s.skill === 500 && s.coins === 1000 && s.energy <= derived(s).maxEnergy && Math.abs(a.skill - 1.75) < 0.001 && b.s.coins === 310 && tabs.length === 5;
 })();
 
 function BrandLogo({ className = "" }) {
@@ -239,7 +275,7 @@ function Bar({ value, max, label }) {
 function Nav({ tab, setTab }) {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md border-t border-[#00FF00]/25 bg-black px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-2">
-      <div className="grid grid-cols-4 gap-1">
+      <div className="grid grid-cols-5 gap-1">
         {tabs.map((t) => {
           const Icon = t.icon;
           const active = tab === t.id;
@@ -329,6 +365,34 @@ function Career({ s, d }) {
       <Card><Title small="Лента" title="История сезона" icon={icons.spark} /><div className="space-y-2">{s.log.map((x, i) => <div key={`${x}-${i}`} className="border border-white/10 bg-white/[0.035] px-3.5 py-3 text-xs leading-relaxed text-white/65">{x}</div>)}</div></Card>
       {!TESTS_OK ? <Card className="border-red-300/30 bg-red-500/10 text-xs text-red-100">Проверки логики не пройдены.</Card> : null}
     </div>
+  );
+}
+
+function Achievements({ s }) {
+  const unlocked = achievements.filter((a) => s.ach?.[a.id]).length;
+  return (
+    <Card>
+      <Title small="Награды" title={`Достижения ${unlocked}/${achievements.length}`} icon={icons.spark} />
+      <div className="mb-3 border border-[#00FF00]/25 bg-[#00FF00]/10 p-3 text-xs font-bold leading-relaxed text-white/75">
+        Достижения открываются постепенно: за мастерство, фанатов, репутацию, старты, улучшения и выносливость.
+      </div>
+      <div className="space-y-2.5">
+        {achievements.map((a, i) => {
+          const open = Boolean(s.ach?.[a.id]);
+          return (
+            <article key={a.id} className={`border p-3 ${open ? "border-[#00FF00] bg-[#00FF00] text-black" : "border-white/10 bg-white/[0.03] text-white/35"}`}>
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-current text-xs font-black">{open ? "✓" : i + 1}</div>
+                <div>
+                  <p className="text-sm font-black">{a.title}</p>
+                  <p className={open ? "text-xs text-black/65" : "text-xs text-white/40"}>{open ? "Получено" : "Пока закрыто"}</p>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </Card>
   );
 }
 
@@ -455,6 +519,7 @@ export default function FigureSkatingClicker() {
         {tab === "shop" ? <Shop s={s} buy={buy} /> : null}
         {tab === "events" ? <Events s={s} compete={compete} /> : null}
         {tab === "career" ? <Career s={s} d={d} /> : null}
+        {tab === "achievements" ? <Achievements s={s} /> : null}
       </main>
       <Nav tab={tab} setTab={setTab} />
       {toast ? <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+86px)] z-50 mx-auto max-w-sm border border-[#00FF00] bg-[#00FF00] p-4 text-center text-sm font-black text-black shadow-2xl">{toast}</div> : null}
