@@ -323,8 +323,10 @@ export default function FigureSkatingClicker() {
   function signSponsor(x) { setS((old) => { if (old.sponsors?.[x.id] || old.fans < x.fansReq || old.rep < x.repReq) return old; return addLog(addNews({ ...old, sponsors: { ...old.sponsors, [x.id]: true } }, `БЛИК: подписан спонсорский контракт «${x.title}».`), `Новый спонсор: ${x.title}.`); }); }
   function setTrainingMode(mode) { setS((old) => ({ ...old, trainingMode: mode.id })); }
   async function shareResult() {
-    const url = "https://assaboud-commits.github.io/skating-clicker/";
-    const text = `Я дошел до этапа «${d.stage.name}» в игре «Путь фигуриста» от БЛИК. Мастерство: ${fmt(s.skill)}, фанаты: ${fmt(s.fans)}, репутация: ${fmt(s.rep)}.`;
+    const url = "https://t.me/blik_skating_clicker_bot";
+    const text = `Я дошел до этапа «${d.stage.name}» в игре «Путь фигуриста» от БЛИК. Мастерство: ${fmt(s.skill)}, фанаты: ${fmt(s.fans)}, репутация: ${fmt(s.rep)}.
+
+Играть: @blik_skating_clicker_bot`;
     try {
       if (navigator.share) await navigator.share({ title: "Путь фигуриста", text, url });
       else if (navigator.clipboard) { await navigator.clipboard.writeText(`${text}
