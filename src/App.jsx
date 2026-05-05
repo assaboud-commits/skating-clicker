@@ -109,13 +109,37 @@ const dailyRewards = [
 ];
 
 const careerMoments = [
-  ["firstIce", "Первый выход на лед", (s) => s.skill >= 10],
-  ["firstStart", "Первый старт", (s) => Object.values(s.done || {}).filter(Boolean).length >= 1],
-  ["firstSponsor", "Первый спонсор", (s) => Object.values(s.sponsors || {}).filter(Boolean).length >= 1],
-  ["firstGold", "Первое золото", (s) => (s.goldCount || 0) >= 1],
-  ["millionFans", "Первый миллион фанатов", (s) => s.fans >= 1000000],
-  ["icePeak", "Вершина льда", (s) => s.skill >= 1300000]
-].map(([id, title, ok]) => ({ id, title, ok }));
+  ["firstIce", "Первый выход на лед", "Первый шаг всегда самый холодный.", (s) => s.skill >= 10],
+  ["firstHundred", "Первые 100 мастерства", "Лед начинает слушаться.", (s) => s.skill >= 100],
+  ["firstFallRise", "Упал — встал", "Настоящий путь начинается после первых ошибок.", (s) => s.skill >= 250],
+  ["firstSection", "Детская секция", "Теперь у тебя есть режим, тренер и цель.", (s) => s.skill >= 500],
+  ["firstFans", "Первые фанаты", "Кто-то уже следит за твоим путем.", (s) => s.fans >= 100],
+  ["firstStart", "Первый старт", "Первый официальный выход под взглядами трибун.", (s) => Object.values(s.done || {}).filter(Boolean).length >= 1],
+  ["firstMoney", "Первый бюджет", "На ледовой мечте появляются первые деньги.", (s) => s.coins >= 1000],
+  ["schoolLeague", "Школьная лига", "Путь перестает быть тренировкой и становится карьерой.", (s) => s.skill >= 2000],
+  ["firstRep", "Первая репутация", "О тебе начинают говорить в спортивном кругу.", (s) => s.rep >= 10],
+  ["firstUpgrade", "Первое улучшение", "Подготовка становится профессиональнее.", (s) => Object.values(s.ups || {}).reduce((a, b) => a + b, 0) >= 1],
+  ["cityStarts", "Городские старты", "Ты выходишь за пределы домашнего катка.", (s) => s.skill >= 7500],
+  ["fiveStarts", "Пять стартов", "Сезон набирает темп.", (s) => Object.values(s.done || {}).filter(Boolean).length >= 5],
+  ["firstSponsor", "Первый спонсор", "В твой путь поверили не только фанаты.", (s) => Object.values(s.sponsors || {}).filter(Boolean).length >= 1],
+  ["firstGold", "Первое золото", "Первый пьедестал, который запомнится навсегда.", (s) => (s.goldCount || 0) >= 1],
+  ["tenKFans", "10 000 фанатов", "Трибуны становятся громче.", (s) => s.fans >= 10000],
+  ["region", "Региональная сборная", "Теперь ты часть большой спортивной системы.", (s) => s.skill >= 60000],
+  ["programUpgrade", "Сложная программа", "В прокате появляются элементы, которые ждут зрители.", (s) => Object.values(s.program || {}).filter(Boolean).length >= 4],
+  ["mediaMoment", "Медиа-момент", "БЛИК впервые сделал из твоей карьеры историю.", (s) => s.fans >= 20000 && (s.rep >= 25 || (s.news || []).length >= 3)],
+  ["hundredKSkill", "100 000 мастерства", "Техника становится фундаментом карьеры.", (s) => s.skill >= 100000],
+  ["juniorFinal", "Юниорский финал", "На льду уже нет случайных людей.", (s) => s.skill >= 135000],
+  ["hundredKFans", "100 000 фанатов", "Твое имя узнают за пределами катка.", (s) => s.fans >= 100000],
+  ["nationalArena", "Национальная арена", "Ты входишь в круг сильнейших.", (s) => s.skill >= 280000],
+  ["bigSponsor", "Большой контракт", "Спонсоры начинают бороться за место рядом с тобой.", (s) => Object.values(s.sponsors || {}).filter(Boolean).length >= 3],
+  ["formPeak", "Пиковая форма", "Тело, лед и музыка работают как единое целое.", (s) => (s.form || 0) >= 95],
+  ["halfMillionSkill", "500 000 мастерства", "Это уже не талант. Это система.", (s) => s.skill >= 500000],
+  ["international", "Международный сезон", "Твой путь выходит на мировую арену.", (s) => s.skill >= 520000],
+  ["millionFans", "Первый миллион фанатов", "Теперь за твоим прокатом следит огромная аудитория.", (s) => s.fans >= 1000000],
+  ["grandFinal", "Главный финал", "Один прокат может стать легендой.", (s) => s.skill >= 850000],
+  ["worldStart", "Главный мировой старт", "Ты готов к самому большому льду.", (s) => s.skill >= 1250000],
+  ["icePeak", "Вершина льда", "Ты стал легендой, которую будут вспоминать.", (s) => s.skill >= 1300000]
+].map(([id, title, note, ok], index) => ({ id, title, note, ok, image: `${BASE_URL}moments/${String(index + 1).padStart(2, "0")}-${id}.jpg` }));
 
 const mediaEvents = [
   ["interview", "БЛИК зовет на короткое интервью после старта.", "Дать интервью", { fans: 1800, rep: 8, energy: -8 }, "Отказаться и восстановиться", { energy: 18 }],
@@ -152,7 +176,7 @@ function initial() {
     skill: 0, coins: 60, fans: 0, rep: 0, energy: 100, updated: Date.now(),
     ups: Object.fromEntries(upgrades.map((u) => [u.id, 0])), done: {}, ach: {}, tasks: makeTasks(), taskStamp: dayStamp(),
     program: { spin: true }, sponsors: {}, prestige: 0, trainingMode: "jumps", playerName: "Фигурист БЛИК", form: 55,
-    media: null, moments: {}, dailyStamp: "", streak: 0, goldCount: 0,
+    media: null, moments: {}, lastMoment: null, dailyStamp: "", streak: 0, goldCount: 0,
     news: ["БЛИК: новый фигурист вышел на лед. Начинается путь."],
     log: ["Ты впервые вышел на лед. Пока холодно, страшно, но красиво."]
   };
@@ -196,6 +220,7 @@ function normalize(raw) {
     form: clamp(n(raw.form, 55), 0, 100),
     media: raw.media && typeof raw.media === "object" ? raw.media : null,
     moments: raw.moments && typeof raw.moments === "object" && !Array.isArray(raw.moments) ? raw.moments : {},
+    lastMoment: raw.lastMoment && typeof raw.lastMoment === "object" ? raw.lastMoment : null,
     dailyStamp: typeof raw.dailyStamp === "string" ? raw.dailyStamp : "",
     streak: Math.max(0, Math.floor(n(raw.streak))),
     goldCount: Math.max(0, Math.floor(n(raw.goldCount))),
@@ -244,8 +269,11 @@ function applyAch(s) {
   careerMoments.forEach((m) => { if (!moments[m.id] && m.ok(s)) { moments[m.id] = true; newMoments.push(m.title); } });
   let next = { ...s, ach, moments };
   if (got.length) next = addLog({ ...next, coins: next.coins + got.length * 250 }, `Достижение: ${got[0]}! Бонус: ${got.length * 250} ₽.`);
-  if (newMoments.length) next = addNews(addLog(next, `Момент карьеры: ${newMoments[0]}.`), `БЛИК: открыт момент карьеры «${newMoments[0]}».`);
-  return { s: next, got };
+  if (newMoments.length) {
+    const first = careerMoments.find((m) => m.title === newMoments[0]);
+    next = addNews(addLog({ ...next, lastMoment: first ? { id: first.id, title: first.title, note: first.note, image: first.image, ts: Date.now() } : null }, `Момент карьеры: ${newMoments[0]}.`), `БЛИК: открыт момент карьеры «${newMoments[0]}».`);
+  }
+  return { s: next, got, moments: newMoments };
 }
 
 function tick(s, now = Date.now()) {
@@ -331,8 +359,13 @@ function DailyBonus({ s, claim }) {
   return <Card><Title small="Возвращение" title="Ежедневный бонус" icon={icons.spark} /><p className="mb-3 text-xs leading-relaxed text-white/60">Серия: {s.streak || 0} дн. Сегодня: +{fmt(reward.coins)} ₽, +{fmt(reward.fans)} фанатов, +{reward.rep} репутации, +{reward.form} формы.</p><button type="button" onClick={claim} disabled={!available} className={`w-full border px-4 py-3 text-xs font-black uppercase ${available ? "border-[#00FF00] bg-[#00FF00] text-black" : "border-white/10 bg-white/5 text-white/35"}`}>{available ? "Забрать бонус" : "Бонус уже получен"}</button></Card>;
 }
 
-function Moments({ s }) {
-  return <Card><Title small="Коллекция" title="Моменты карьеры" icon={icons.crown} /><div className="grid grid-cols-2 gap-2">{careerMoments.map((m) => { const open = Boolean(s.moments?.[m.id]); return <div key={m.id} className={`border p-3 min-h-[90px] ${open ? "border-[#00FF00] bg-[#00FF00] text-black" : "border-white/10 bg-white/[0.035] text-white/35"}`}><p className="text-xl">{open ? "✦" : "?"}</p><p className="mt-2 text-xs font-black leading-snug">{m.title}</p></div>; })}</div></Card>;
+function Moments({ s, onOpen }) {
+  return <Card><Title small="Коллекция" title={`Моменты карьеры ${Object.values(s.moments || {}).filter(Boolean).length}/${careerMoments.length}`} icon={icons.crown} /><div className="grid grid-cols-2 gap-2">{careerMoments.map((m) => { const open = Boolean(s.moments?.[m.id]); return <button type="button" key={m.id} onClick={() => open && onOpen(m)} className={`min-h-[160px] overflow-hidden border text-left transition ${open ? "border-[#00FF00] bg-black text-white active:scale-[0.98]" : "border-white/10 bg-white/[0.035] text-white/35"}`}>{open ? <><div className="bg-black"><img src={m.image} alt={m.title} className="aspect-[470/836] w-full object-contain" /></div><div className="p-3"><p className="text-xs font-black leading-snug text-white">{m.title}</p><p className="mt-1 text-[10px] font-bold leading-snug text-[#00FF00]">Нажми, чтобы открыть</p></div></> : <div className="flex h-full min-h-[160px] flex-col justify-between p-3"><p className="text-xl">?</p><div><p className="text-xs font-black leading-snug">{m.title}</p><p className="mt-1 text-[10px] font-bold leading-snug text-white/25">Пока закрыто</p></div></div>}</button>; })}</div></Card>;
+}
+
+function MomentOverlay({ moment, onClose }) {
+  if (!moment) return null;
+  return <button type="button" onClick={onClose} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/88 px-5 text-left backdrop-blur-sm"><div className="w-full max-w-sm overflow-hidden border-2 border-[#00FF00] bg-black text-white shadow-[0_0_90px_rgba(0,255,0,0.35)]">{moment.image ? <div className="flex max-h-[72dvh] items-center justify-center bg-black"><img src={moment.image} alt={moment.title} className="max-h-[72dvh] w-full object-contain" /></div> : <div className="flex h-64 items-center justify-center bg-[#00FF00] text-6xl text-black">✦</div>}<div className="bg-[#00FF00] p-5 text-black"><p className="text-[10px] font-black uppercase tracking-[0.24em] text-black/55">Момент карьеры</p><h2 className="mt-3 text-3xl font-black leading-none tracking-tight">{moment.title}</h2><p className="mt-4 text-sm font-bold leading-relaxed text-black/70">{moment.note}</p><p className="mt-5 border-t border-black/20 pt-4 text-[10px] font-black uppercase tracking-[0.18em] text-black/50">Нажми еще раз, чтобы закрыть</p></div></div></button>;
 }
 
 function Passport({ s, d }) {
@@ -348,8 +381,8 @@ function OfflineCard({ offline, close }) {
 
 function BlikFeed({ s }) { const feed = [...(s.news || []), ...(s.log || [])].slice(0, 10); return <Card><Title small="БЛИК" title="Лента" icon={icons.spark} /><div className="space-y-2">{feed.map((x, i) => <div key={`${x}-${i}`} className="border border-white/10 bg-white/[0.035] px-3.5 py-3 text-xs leading-relaxed text-white/65">{x}</div>)}</div></Card>; }
 
-function More({ s, d, prestige, reset, share, setName, claimDaily }) {
-  return <div className="space-y-4"><NameEditor s={s} setName={setName} /><Passport s={s} d={d} /><DailyBonus s={s} claim={claimDaily} /><Resources s={s} d={d} /><Moments s={s} /><Career s={s} d={d} /><Achievements s={s} /><BlikFeed s={s} /><Card><Title small="Финал" title="Престиж" icon={icons.crown} /><p className="mb-3 text-xs leading-relaxed text-white/60">После вершины льда можно начать карьеру заново с бонусом наследия. Нужно: 1.3M мастерства, 1M фанатов и 3K репутации. Сейчас престиж: {s.prestige || 0}.</p><button type="button" onClick={prestige} disabled={s.skill < 1300000 || s.fans < 1000000 || s.rep < 3000} className={`w-full border px-4 py-3 text-xs font-black uppercase ${s.skill >= 1300000 && s.fans >= 1000000 && s.rep >= 3000 ? "border-[#00FF00] bg-[#00FF00] text-black" : "border-white/10 bg-white/5 text-white/35"}`}>Начать новую легенду</button></Card><Card><Title small="Telegram" title="Поделиться результатом" icon={icons.fans} /><p className="mb-3 text-xs leading-relaxed text-white/60">Скопируй или отправь другу текущий результат и предложи обогнать тебя.</p><button type="button" onClick={share} className="w-full border border-[#00FF00] bg-[#00FF00] px-4 py-3 text-xs font-black uppercase text-black">Поделиться</button></Card><Card><Title small="Настройки" title="Опасная зона" icon={icons.reset} /><button type="button" onClick={reset} className="w-full border border-white/20 bg-white/5 px-4 py-3 text-xs font-black uppercase text-white/70">Сбросить прогресс</button></Card></div>;
+function More({ s, d, prestige, reset, share, setName, claimDaily, openMoment }) {
+  return <div className="space-y-4"><NameEditor s={s} setName={setName} /><Passport s={s} d={d} /><DailyBonus s={s} claim={claimDaily} /><Resources s={s} d={d} /><Moments s={s} onOpen={openMoment} /><Career s={s} d={d} /><Achievements s={s} /><BlikFeed s={s} /><Card><Title small="Финал" title="Престиж" icon={icons.crown} /><p className="mb-3 text-xs leading-relaxed text-white/60">После вершины льда можно начать карьеру заново с бонусом наследия. Нужно: 1.3M мастерства, 1M фанатов и 3K репутации. Сейчас престиж: {s.prestige || 0}.</p><button type="button" onClick={prestige} disabled={s.skill < 1300000 || s.fans < 1000000 || s.rep < 3000} className={`w-full border px-4 py-3 text-xs font-black uppercase ${s.skill >= 1300000 && s.fans >= 1000000 && s.rep >= 3000 ? "border-[#00FF00] bg-[#00FF00] text-black" : "border-white/10 bg-white/5 text-white/35"}`}>Начать новую легенду</button></Card><Card><Title small="Telegram" title="Поделиться результатом" icon={icons.fans} /><p className="mb-3 text-xs leading-relaxed text-white/60">Скопируй или отправь другу текущий результат и предложи обогнать тебя.</p><button type="button" onClick={share} className="w-full border border-[#00FF00] bg-[#00FF00] px-4 py-3 text-xs font-black uppercase text-black">Поделиться</button></Card><Card><Title small="Настройки" title="Опасная зона" icon={icons.reset} /><button type="button" onClick={reset} className="w-full border border-white/20 bg-white/5 px-4 py-3 text-xs font-black uppercase text-white/70">Сбросить прогресс</button></Card></div>;
 }
 
 export default function FigureSkatingClicker() {
@@ -358,6 +391,9 @@ export default function FigureSkatingClicker() {
   const [toast, setToast] = useState(null);
   const [float, setFloat] = useState([]);
   const [offline, setOffline] = useState(null);
+  const [momentPopup, setMomentPopup] = useState(null);
+  const [openedMoment, setOpenedMoment] = useState(null);
+  const [shownMomentKey, setShownMomentKey] = useState("");
   const d = useMemo(() => derived(s), [s]);
   const next = stages.find((x) => x.min > s.skill);
   const finale = s.skill >= stages[stages.length - 1].min;
@@ -376,6 +412,13 @@ export default function FigureSkatingClicker() {
   }, []);
   useEffect(() => { const id = window.setInterval(() => { let msg = null; setS((old) => { const r = tick(old); if (r.got.length) msg = `Достижение: ${r.got[0]}`; return r.s; }); if (msg) setToast(msg); }, 1000); return () => window.clearInterval(id); }, []);
   useEffect(() => { if (!toast) return undefined; const id = window.setTimeout(() => setToast(null), 2200); return () => window.clearTimeout(id); }, [toast]);
+  useEffect(() => {
+    const key = s.lastMoment ? `${s.lastMoment.id}-${s.lastMoment.ts}` : "";
+    if (key && key !== shownMomentKey) {
+      setShownMomentKey(key);
+      setMomentPopup(s.lastMoment);
+    }
+  }, [s.lastMoment, shownMomentKey]);
 
   function pop(text) { const id = `${Date.now()}-${Math.random()}`; setFloat((a) => [...a, { id, text }]); window.setTimeout(() => setFloat((a) => a.filter((x) => x.id !== id)), 750); }
   function train() { buzz("medium"); let msg = null; setS((old) => { const base = freshTasks(tick(old).s); const dd = derived(base); const mode = trainingModes.find((x) => x.id === base.trainingMode) || trainingModes[0]; const crit = Math.random() < 0.08 + Math.min(base.rep / 5000, 0.08); const mod = base.energy >= 1 ? 1 : 0.25; const gain = dd.click * mode.skillMod * mod * (crit ? 3 : 1); const fanGain = dd.fansClick * mode.fansMod * mod * (crit ? 2 : 1); const repGain = mode.repGain ? mode.repGain * mod : 0; const stageIndex = Math.max(0, stages.findIndex((x) => x.name === dd.stage.name)); const coinGain = Math.max(1, Math.floor((stageIndex + 1) * mod)); let ns = { ...base, skill: base.skill + gain, fans: base.fans + fanGain, rep: base.rep + repGain, coins: base.coins + coinGain, form: clamp((base.form || 0) + 0.08 + (mode.id === "stamina" ? 0.18 : 0) + (crit ? 0.04 : 0), 0, 100), energy: clamp(base.energy - mode.energyCost, 0, dd.maxEnergy), updated: Date.now() }; ns = bumpTask(bumpTask(bumpTask(ns, "trains", 1), "fans", fanGain), "coins", coinGain); pop(crit ? `Идеальный прыжок +${Math.floor(gain)}` : `+${Math.floor(gain)}`); if (crit) ns = addLog(ns, "Чистый выезд после сложного прыжка. Зал ожил."); const r = applyAch(maybeMedia(ns, 0.025)); if (r.got.length) msg = `Достижение: ${r.got[0]}`; return r.s; }); if (msg) setToast(msg); }
@@ -388,9 +431,10 @@ export default function FigureSkatingClicker() {
   function setTrainingMode(mode) { setS((old) => ({ ...old, trainingMode: mode.id })); }
   function setPlayerName(name) { const clean = String(name || "").trim().slice(0, 28) || "Фигурист БЛИК"; setS((old) => addNews({ ...old, playerName: clean }, `БЛИК: теперь на льду — ${clean}.`)); }
   function chooseMedia(choice) { setS((old) => { if (!old.media) return old; const ev = old.media; const delta = choice === "a" ? ev.a : ev.b; const action = choice === "a" ? ev.aText : ev.bText; const next = applyAch(addNews(addLog(applyDelta({ ...old, media: null }, delta), `Медиа-событие: ${action}.`), `БЛИК: ${old.playerName} — ${action.toLowerCase()}.`)); return next.s; }); }
+  function openMoment(moment) { setOpenedMoment((old) => old?.id === moment.id ? null : moment); }
   function claimDaily() { setS((old) => { if (old.dailyStamp === dayStamp()) return old; const nextStreak = dayIndex(old.dailyStamp) + 1 === dayIndex(dayStamp()) ? Math.min((old.streak || 0) + 1, 7) : 1; const reward = dailyRewards[nextStreak - 1] || dailyRewards[0]; const next = applyAch(addNews(addLog(applyDelta({ ...old, dailyStamp: dayStamp(), streak: nextStreak }, reward), `Ежедневный бонус: серия ${nextStreak} дн.`), `БЛИК: ${old.playerName} забирает ежедневный бонус.`)); setToast(`Бонус дня: серия ${nextStreak}`); return next.s; }); }
   async function shareResult() { const url = BOT_URL; const text = `Мой фигурист ${s.playerName} дошел до этапа «${d.stage.name}» в игре «Путь фигуриста» от БЛИК. Мастерство: ${fmt(s.skill)}, фанаты: ${fmt(s.fans)}, репутация: ${fmt(s.rep)}.\n\nИграть: @blik_skating_clicker_bot`; try { if (navigator.share) await navigator.share({ title: "Путь фигуриста", text, url }); else if (navigator.clipboard) { await navigator.clipboard.writeText(`${text}\n${url}`); setToast("Результат скопирован"); } else setToast("Скопируй ссылку на игру из браузера"); } catch {} }
   function doPrestige() { setS((old) => { if (old.skill < 1300000 || old.fans < 1000000 || old.rep < 3000) return old; const next = initial(); return { ...next, prestige: (old.prestige || 0) + 1, news: [`БЛИК: новая легенда начинается с наследием ${(old.prestige || 0) + 1}.`] }; }); setTab("ice"); }
 
-  return <div className="min-h-[100dvh] overflow-hidden bg-black text-white" style={{ "--tg-accent": BRAND.green, paddingTop: "calc(env(safe-area-inset-top) + 10px)" }}><div className="pointer-events-none fixed inset-0 z-0"><div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 blur-md scale-110 transition-all duration-500" style={{ backgroundImage: `url(${TAB_BACKGROUNDS[tab] || TAB_BACKGROUNDS.ice})` }} /><div className="absolute inset-0 bg-contain bg-top bg-no-repeat opacity-55 transition-all duration-500" style={{ backgroundImage: `url(${TAB_BACKGROUNDS[tab] || TAB_BACKGROUNDS.ice})` }} /><div className="absolute inset-0 bg-black/70" /><div className="absolute inset-0 opacity-70"><div className="absolute -left-24 top-[-120px] h-80 w-80 rounded-full bg-[#00FF00]/10 blur-3xl" /><div className="absolute right-[-160px] top-20 h-96 w-96 rounded-full bg-white/5 blur-3xl" /><div className="absolute bottom-[-180px] left-1/4 h-96 w-96 rounded-full bg-[#00FF00]/10 blur-3xl" /></div></div><main className="relative z-10 mx-auto max-w-md px-3 pb-[calc(env(safe-area-inset-bottom)+104px)]"><header className="mb-3 flex items-center justify-between gap-3 border border-[#00FF00]/25 bg-black px-4 py-3 shadow-2xl"><div><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#00FF00]"><icons.ice size={13} /> Mini App</div><h1 className="text-xl font-black text-white">Путь фигуриста</h1></div><BrandLogo className="h-10 w-auto max-w-[118px]" /></header>{s.media ? <div className="mb-4"><MediaCard event={s.media} choose={chooseMedia} /></div> : null}{tab === "ice" ? <Ice s={s} d={d} next={next} float={float} train={train} setMode={setTrainingMode} /> : null}{tab === "tasks" ? <Tasks s={s} claim={claim} /> : null}{tab === "events" ? <Events s={s} compete={compete} /> : null}{tab === "shop" ? <><Shop s={s} buy={buy} /><div className="mt-4"><Program s={s} toggle={toggleProgram} /></div><div className="mt-4"><Sponsors s={s} sign={signSponsor} /></div></> : null}{tab === "more" ? <More s={s} d={d} prestige={doPrestige} reset={reset} share={shareResult} setName={setPlayerName} claimDaily={claimDaily} /> : null}</main><Nav tab={tab} setTab={setTab} />{toast ? <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+86px)] z-50 mx-auto max-w-sm border border-[#00FF00] bg-[#00FF00] p-4 text-center text-sm font-black text-black shadow-2xl">{toast}</div> : null}<OfflineCard offline={offline} close={() => setOffline(null)} />{finale ? <div className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+12px)] z-40 mx-auto max-w-sm border border-[#00FF00] bg-white px-4 py-4 text-black shadow-2xl"><div className="mb-3 flex items-center gap-3"><icons.crown /><div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/50">Финал</p><p className="text-sm font-black">{s.playerName} стал легендой льда</p></div></div><div className="mb-3 grid grid-cols-3 gap-2 text-center text-[10px] font-black"><div className="border border-black/10 p-2"><p className="text-black/45">Мастерство</p><p>{fmt(s.skill)}</p></div><div className="border border-black/10 p-2"><p className="text-black/45">Фанаты</p><p>{fmt(s.fans)}</p></div><div className="border border-black/10 p-2"><p className="text-black/45">Репутация</p><p>{fmt(s.rep)}</p></div></div><div className="grid grid-cols-2 gap-2"><button type="button" onClick={shareResult} className="border border-black bg-black px-3 py-2 text-[10px] font-black uppercase text-[#00FF00]">Поделиться</button><button type="button" onClick={doPrestige} disabled={s.fans < 1000000 || s.rep < 3000} className={`border px-3 py-2 text-[10px] font-black uppercase ${s.fans >= 1000000 && s.rep >= 3000 ? "border-black bg-[#00FF00] text-black" : "border-black/15 bg-black/5 text-black/35"}`}>Новая легенда</button></div></div> : null}</div>;
+  return <div className="min-h-[100dvh] overflow-hidden bg-black text-white" style={{ "--tg-accent": BRAND.green, paddingTop: "calc(env(safe-area-inset-top) + 10px)" }}><div className="pointer-events-none fixed inset-0 z-0"><div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 blur-md scale-110 transition-all duration-500" style={{ backgroundImage: `url(${TAB_BACKGROUNDS[tab] || TAB_BACKGROUNDS.ice})` }} /><div className="absolute inset-0 bg-contain bg-top bg-no-repeat opacity-55 transition-all duration-500" style={{ backgroundImage: `url(${TAB_BACKGROUNDS[tab] || TAB_BACKGROUNDS.ice})` }} /><div className="absolute inset-0 bg-black/70" /><div className="absolute inset-0 opacity-70"><div className="absolute -left-24 top-[-120px] h-80 w-80 rounded-full bg-[#00FF00]/10 blur-3xl" /><div className="absolute right-[-160px] top-20 h-96 w-96 rounded-full bg-white/5 blur-3xl" /><div className="absolute bottom-[-180px] left-1/4 h-96 w-96 rounded-full bg-[#00FF00]/10 blur-3xl" /></div></div><main className="relative z-10 mx-auto max-w-md px-3 pb-[calc(env(safe-area-inset-bottom)+104px)]"><header className="mb-3 flex items-center justify-between gap-3 border border-[#00FF00]/25 bg-black px-4 py-3 shadow-2xl"><div><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#00FF00]"><icons.ice size={13} /> Mini App</div><h1 className="text-xl font-black text-white">Путь фигуриста</h1></div><BrandLogo className="h-10 w-auto max-w-[118px]" /></header>{s.media ? <div className="mb-4"><MediaCard event={s.media} choose={chooseMedia} /></div> : null}{tab === "ice" ? <Ice s={s} d={d} next={next} float={float} train={train} setMode={setTrainingMode} /> : null}{tab === "tasks" ? <Tasks s={s} claim={claim} /> : null}{tab === "events" ? <Events s={s} compete={compete} /> : null}{tab === "shop" ? <><Shop s={s} buy={buy} /><div className="mt-4"><Program s={s} toggle={toggleProgram} /></div><div className="mt-4"><Sponsors s={s} sign={signSponsor} /></div></> : null}{tab === "more" ? <More s={s} d={d} prestige={doPrestige} reset={reset} share={shareResult} setName={setPlayerName} claimDaily={claimDaily} openMoment={openMoment} /> : null}</main><Nav tab={tab} setTab={setTab} />{toast ? <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+86px)] z-50 mx-auto max-w-sm border border-[#00FF00] bg-[#00FF00] p-4 text-center text-sm font-black text-black shadow-2xl">{toast}</div> : null}<OfflineCard offline={offline} close={() => setOffline(null)} /><MomentOverlay moment={momentPopup} onClose={() => setMomentPopup(null)} /><MomentOverlay moment={openedMoment} onClose={() => setOpenedMoment(null)} />{finale ? <div className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+12px)] z-40 mx-auto max-w-sm border border-[#00FF00] bg-white px-4 py-4 text-black shadow-2xl"><div className="mb-3 flex items-center gap-3"><icons.crown /><div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/50">Финал</p><p className="text-sm font-black">{s.playerName} стал легендой льда</p></div></div><div className="mb-3 grid grid-cols-3 gap-2 text-center text-[10px] font-black"><div className="border border-black/10 p-2"><p className="text-black/45">Мастерство</p><p>{fmt(s.skill)}</p></div><div className="border border-black/10 p-2"><p className="text-black/45">Фанаты</p><p>{fmt(s.fans)}</p></div><div className="border border-black/10 p-2"><p className="text-black/45">Репутация</p><p>{fmt(s.rep)}</p></div></div><div className="grid grid-cols-2 gap-2"><button type="button" onClick={shareResult} className="border border-black bg-black px-3 py-2 text-[10px] font-black uppercase text-[#00FF00]">Поделиться</button><button type="button" onClick={doPrestige} disabled={s.fans < 1000000 || s.rep < 3000} className={`border px-3 py-2 text-[10px] font-black uppercase ${s.fans >= 1000000 && s.rep >= 3000 ? "border-black bg-[#00FF00] text-black" : "border-black/15 bg-black/5 text-black/35"}`}>Новая легенда</button></div></div> : null}</div>;
 }
