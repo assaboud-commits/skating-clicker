@@ -398,7 +398,7 @@ export default function FigureSkatingClicker() {
   const next = stages.find((x) => x.min > s.skill);
   const finale = s.skill >= stages[stages.length - 1].min;
 
-  useEffect(() => { const app = tg(); try { app?.ready?.(); app?.expand?.(); app?.requestFullscreen?.(); app?.disableVerticalSwipes?.(); app?.setHeaderColor?.(BRAND.black); app?.setBackgroundColor?.(BRAND.black); } catch {} }, []);
+  useEffect(() => { const app = tg(); try { app?.ready?.(); app?.expand?.();  app?.disableVerticalSwipes?.(); app?.setHeaderColor?.(BRAND.black); app?.setBackgroundColor?.(BRAND.black); } catch {} }, []);
   useEffect(() => { save(s); cloudSave(s); }, [s]);
   useEffect(() => { try { tg()?.CloudStorage?.getItem?.(KEY, (err, value) => { if (!err && value) { try { const cloud = normalize(JSON.parse(value)); setS((old) => n(cloud.updated) > n(old.updated) ? cloud : old); } catch {} } }); } catch {} }, []);
   useEffect(() => {
