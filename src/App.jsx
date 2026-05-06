@@ -39,16 +39,16 @@ const stages = [
 
 const upgrades = [
   ["skates", "Профессиональные коньки", icons.ice, "+0.8 мастерства за тренировку", 140, 1.55, 45, { click: 0.8 }],
-  ["coach", "Личный тренер", icons.gym, "+0.35 мастерства в секунду", 450, 1.64, 40, { autoSkill: 0.35 }],
-  ["choreo", "Хореограф", icons.music, "+1 фанат за тренировку и бонус к оценке", 760, 1.68, 35, { fansClick: 1, score: 1 }],
+  ["coach", "Индивидуальный план тренировок", icons.gym, "+0.35 мастерства в секунду", 450, 1.64, 40, { autoSkill: 0.35 }],
+  ["choreo", "Музыкальная постановка", icons.music, "+1 фанат за тренировку и бонус к оценке", 760, 1.68, 35, { fansClick: 1, score: 1 }],
   ["costumeBase", "Сценический образ", icons.star, "+4% к наградам", 1200, 1.7, 30, { reward: 0.04 }],
-  ["media", "Медиа-команда", icons.fans, "+0.45 фаната в секунду", 1800, 1.72, 30, { autoFans: 0.45 }],
-  ["mental", "Спортивный психолог", icons.spark, "+8 к максимуму энергии", 2400, 1.74, 25, { maxEnergy: 8 }],
+  ["media", "Контент-план БЛИК", icons.fans, "+0.45 фаната в секунду", 1800, 1.72, 30, { autoFans: 0.45 }],
+  ["mental", "Ментальная подготовка", icons.spark, "+8 к максимуму энергии", 2400, 1.74, 25, { maxEnergy: 8 }],
   ["ballet", "Классическая подготовка", icons.music, "+0.7 мастерства за тренировку и бонус к оценке", 3600, 1.76, 26, { click: 0.7, score: 1.2 }],
   ["blades", "Заточка лезвий", icons.ice, "+1.2 мастерства за тренировку", 5200, 1.78, 24, { click: 1.2 }],
-  ["recovery", "Восстановление", icons.spark, "+10 к максимуму энергии", 7600, 1.8, 22, { maxEnergy: 10 }],
-  ["analyst", "Видеоаналитик", icons.star, "+3 к оценке и +2% к наградам", 11200, 1.82, 22, { score: 3, reward: 0.02 }],
-  ["agent", "Спортивный агент", icons.money, "+3% к наградам и +0.2 фаната в секунду", 16800, 1.84, 20, { reward: 0.03, autoFans: 0.2 }],
+  ["recovery", "Восстановительный центр", icons.spark, "+10 к максимуму энергии", 7600, 1.8, 22, { maxEnergy: 10 }],
+  ["analyst", "Система видеоразбора", icons.star, "+3 к оценке и +2% к наградам", 11200, 1.82, 22, { score: 3, reward: 0.02 }],
+  ["agent", "Контрактная стратегия", icons.money, "+3% к наградам и +0.2 фаната в секунду", 16800, 1.84, 20, { reward: 0.03, autoFans: 0.2 }],
   ["rink", "Аренда льда", icons.ice, "+0.6 мастерства в секунду", 25000, 1.86, 20, { autoSkill: 0.6 }],
   ["jumps", "Ультра-си база", icons.star, "+3 мастерства за тренировку и большой бонус к оценке", 38000, 1.9, 18, { click: 3, score: 3 }],
   ["tour", "Ледовое шоу", icons.fans, "+1 фанат в секунду и +3% к наградам", 56000, 1.92, 18, { autoFans: 1, reward: 0.03 }],
@@ -109,7 +109,7 @@ const teamMembers = [
   ["agent", "Агент", "Открывает сильные контракты и усиливает денежную часть карьеры.", 5200, 1.82, 20, { reward: 0.006, sponsorMult: 0.012 }],
   ["mediaManager", "Медиа-менеджер", "Превращает каждый инфоповод в рост аудитории.", 7600, 1.84, 20, { autoFans: 0.22, fansClick: 0.12, sponsorMult: 0.008 }],
   ["physio", "Физиотерапевт", "Поддерживает тело в рабочем состоянии и помогает форме держаться дольше.", 11000, 1.86, 18, { maxEnergy: 2.5, formHold: 0.00006, formGain: 0.03 }]
-].map(([id, title, note, base, scale, max, effect]) => ({ id, title, note, base, scale, max, effect }));
+].map(([id, title, note, base, scale, max, effect]) => ({ id, title, note, base, scale, max, effect, images: [`${BASE_URL}team/${id}.webp`, `${BASE_URL}team/${id}.jpg`, `${BASE_URL}team/${id}.png`, `${BASE_URL}team/${id}.jpeg`] }));
 
 const dailyRewards = [
   { coins: 1200, fans: 400, rep: 1, form: 4 }, { coins: 2500, fans: 900, rep: 2, form: 6 },
@@ -355,9 +355,16 @@ function Program({ s, toggle }) { const bonus = programScore(s); return <Card><T
 
 function Sponsors({ s, sign }) { return <Card><Title small="Контракты" title="Спонсоры" icon={icons.money} /><div className="space-y-2.5">{sponsors.map((x) => { const ok = s.fans >= x.fansReq && s.rep >= x.repReq; const active = Boolean(s.sponsors?.[x.id]); return <article key={x.id} className={`border p-3 ${active ? "border-[#00FF00] bg-[#00FF00] text-black" : "border-white/10 bg-white/[0.035] text-white"}`}><div className="flex items-start justify-between gap-3"><div><p className="text-sm font-black">{x.title}</p><p className={active ? "text-xs text-black/65" : "text-xs text-white/45"}>Нужно {fmt(x.fansReq)} фанатов и {fmt(x.repReq)} репутации · +{x.coinsSec} ₽/сек · +{Math.round(x.reward * 100)}% к наградам</p></div><button type="button" onClick={() => sign(x)} disabled={!ok || active} className={`border px-3 py-2 text-[10px] font-black uppercase ${ok && !active ? "border-[#00FF00] bg-[#00FF00] text-black" : "border-white/10 bg-white/5 text-white/35"}`}>{active ? "Подписан" : ok ? "Подписать" : "Закрыто"}</button></div></article>; })}</div></Card>; }
 
+function TeamAvatar({ member }) {
+  const [index, setIndex] = useState(0);
+  const src = member.images?.[index];
+  if (!src) return <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[22px] border border-[#00FF00]/35 bg-black text-[#00FF00]"><icons.fans size={24} /></div>;
+  return <img src={src} alt={member.title} onError={() => setIndex((i) => i + 1)} className="h-20 w-20 shrink-0 rounded-[22px] border border-white/10 object-cover shadow-[0_0_24px_rgba(0,255,0,0.08)]" />;
+}
+
 function Team({ s, improve }) {
   const total = Object.values(s.team || {}).reduce((a, b) => a + b, 0);
-  return <Card><Title small="Штаб" title={`Команда фигуриста · ${total} ур.`} icon={icons.fans} /><div className="mb-3 border border-[#00FF00]/25 bg-[#00FF00]/10 p-3 text-xs font-bold leading-relaxed text-white/75">Команда дает постоянные бонусы к подготовке, форме, аудитории, наградам и спонсорским доходам.</div><div className="space-y-2.5">{teamMembers.map((m) => { const lvl = s.team?.[m.id] || 0; const c = teamCost(m, lvl); const can = s.coins >= c && lvl < m.max; const trust = clamp(25 + lvl * 3, 25, 100); return <article key={m.id} className="border border-white/10 bg-white/[0.035] p-3.5"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-sm font-black text-white">{m.title}</p><p className="mt-1 text-xs leading-relaxed text-white/45">{m.note}</p><p className="mt-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#00FF00]">Уровень {lvl}/{m.max} · доверие {trust}%</p></div><div className="flex h-11 w-11 shrink-0 items-center justify-center border border-[#00FF00]/35 bg-black text-[#00FF00]"><icons.fans size={19} /></div></div><button type="button" onClick={() => improve(m)} disabled={!can} className={`mt-3 w-full border px-4 py-3 text-xs font-black uppercase tracking-[0.04em] ${can ? "border-[#00FF00] bg-[#00FF00] text-black" : "cursor-not-allowed border-white/10 bg-white/5 text-white/35"}`}>{lvl >= m.max ? "Максимум" : `Усилить за ${fmt(c)} ₽`}</button></article>; })}</div></Card>;
+  return <Card><Title small="Штаб" title={`Команда фигуриста · ${total} ур.`} icon={icons.fans} /><div className="mb-3 border border-[#00FF00]/25 bg-[#00FF00]/10 p-3 text-xs font-bold leading-relaxed text-white/75">Команда дает постоянные бонусы к подготовке, форме, аудитории, наградам и спонсорским доходам.</div><div className="space-y-3">{teamMembers.map((m) => { const lvl = s.team?.[m.id] || 0; const c = teamCost(m, lvl); const can = s.coins >= c && lvl < m.max; const trust = clamp(25 + lvl * 3, 25, 100); return <article key={m.id} className="flex gap-3 rounded-[28px] border border-white/10 bg-white/[0.045] p-3 text-left backdrop-blur-md"><TeamAvatar member={m} /><div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-2"><div><p className="text-sm font-black text-white">{m.title}</p><p className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#00FF00]">Уровень {lvl}/{m.max} · доверие {trust}%</p></div></div><p className="mt-2 text-xs leading-relaxed text-white/48">{m.note}</p><button type="button" onClick={() => improve(m)} disabled={!can} className={`mt-3 w-full rounded-[18px] border px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.04em] ${can ? "border-[#00FF00] bg-[#00FF00] text-black" : "cursor-not-allowed border-white/10 bg-white/5 text-white/35"}`}>{lvl >= m.max ? "Максимум" : `Усилить за ${fmt(c)} ₽`}</button></div></article>; })}</div></Card>;
 }
 
 function Career({ s, d }) { return <Card><Title small="Карьера" title="Лестница к вершине" icon={icons.crown} /><div className="space-y-2.5">{stages.map((st, i) => { const active = st.name === d.stage.name; const reached = s.skill >= st.min; return <article key={st.name} className={`border p-3 ${active ? "border-[#00FF00] bg-[#00FF00] text-black" : reached ? "border-white/10 bg-white/10 text-white" : "border-white/10 bg-white/[0.025] text-white/35"}`}><div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center border border-current text-xs font-black">{i + 1}</div><div><p className="text-sm font-black">{st.name}</p><p className={active ? "text-xs text-black/65" : "text-xs text-white/50"}>от {fmt(st.min)} мастерства</p></div></div></article>; })}</div>{!TESTS_OK ? <div className="mt-3 border border-red-300/30 bg-red-500/10 p-3 text-xs text-red-100">Проверки логики не пройдены.</div> : null}</Card>; }
